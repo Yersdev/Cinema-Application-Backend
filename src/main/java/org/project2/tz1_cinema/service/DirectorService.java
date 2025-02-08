@@ -1,7 +1,7 @@
 package org.project2.tz1_cinema.service;
 
 import org.project2.tz1_cinema.model.Director;
-import org.project2.tz1_cinema.repo.DirectorRepo;
+import org.project2.tz1_cinema.repository.DirectorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,10 +10,10 @@ import java.util.Optional;
 @Service
 public class DirectorService {
 
-    private final DirectorRepo repo;
+    private final DirectorRepository repo;
 
     @Autowired
-    public DirectorService(DirectorRepo repo) {
+    public DirectorService(DirectorRepository repo) {
         this.repo = repo;
     }
 

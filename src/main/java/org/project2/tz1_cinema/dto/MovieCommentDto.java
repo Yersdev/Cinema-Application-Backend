@@ -10,7 +10,7 @@ import org.project2.tz1_cinema.model.Movie;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class comment_Dto {
+public class MovieCommentDto {
     private Movie movie;
     private String comment;
     private UserDto userdto;

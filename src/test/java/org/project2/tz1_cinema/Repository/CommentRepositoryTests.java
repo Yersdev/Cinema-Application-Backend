@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.project2.tz1_cinema.model.Comment;
 import org.project2.tz1_cinema.model.Movie;
-import org.project2.tz1_cinema.repo.CommentRepo;
-import org.project2.tz1_cinema.repo.MovieRepo;
+import org.project2.tz1_cinema.repository.CommentRepository;
+import org.project2.tz1_cinema.repository.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -18,23 +18,23 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentRepositoryTests {
 
     @Autowired
-    private CommentRepo commentRepo;
+    private CommentRepository commentRepository;
 
     @Autowired
-    private MovieRepo movieRepo;
+    private MovieRepository movieRepository;
 
     @Test
     public void CommentRepository_CommentSave() {
         // Сохраняем объект Movie в базе данных
         Movie movie = new Movie();
         movie.setTitle("Test Movie");
-        movieRepo.save(movie);
+        movieRepository.save(movie);
 
         // Создаем и сохраняем комментарий
         Comment comment = new Comment();
         comment.setComment("Test1");
         comment.setMovie(movie);
-        Comment comment1 = commentRepo.save(comment);
+        Comment comment1 = commentRepository.save(comment);
 
         // Проверяем, что комментарий сохранен
         Assertions.assertNotNull(comment1);
@@ -43,13 +43,13 @@ public class CommentRepositoryTests {
     @Test void CommentRepository_CommentDelete() {
         Movie movie = new Movie();
         movie.setTitle("Test Movie");
-        movieRepo.save(movie);
+        movieRepository.save(movie);
 
         // Создаем и сохраняем комментарий
         Comment comment = new Comment();
         comment.setComment("Test1");
         comment.setMovie(movie);
-        commentRepo.save(comment);
-        commentRepo.delete(comment);
+        commentRepository.save(comment);
+        commentRepository.delete(comment);
     }
 }

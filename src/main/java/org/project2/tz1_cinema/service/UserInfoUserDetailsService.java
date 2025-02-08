@@ -2,7 +2,7 @@ package org.project2.tz1_cinema.service;
 import lombok.extern.slf4j.Slf4j;
 import org.project2.tz1_cinema.dto.UserInfoUserDetails;
 import org.project2.tz1_cinema.model.Users;
-import org.project2.tz1_cinema.repo.UserRepo;
+import org.project2.tz1_cinema.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,7 +16,7 @@ import java.util.Optional;
 public class UserInfoUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private UserRepo repository;
+    private UserRepository repository;
 
     @Override
 

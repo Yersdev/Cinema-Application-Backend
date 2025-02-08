@@ -7,18 +7,10 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class comment_details_dto {
+public class CommentDto {
     private String movie_title;
     private String firstName;
     private String lastName;
     private String email;
     private String comments;
-
-    public comment_details_dto(String firsName, String lastName, String email) {
-        this.firstName = firsName;
-        this.lastName = lastName;
-        this.email = email;
-    }
-
-
 }

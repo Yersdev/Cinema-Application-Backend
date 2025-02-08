@@ -3,7 +3,7 @@ package org.project2.tz1_cinema.config;
 import lombok.extern.slf4j.Slf4j;
 import org.project2.tz1_cinema.model.Role;
 import org.project2.tz1_cinema.model.Users;
-import org.project2.tz1_cinema.repo.UserRepo;
+import org.project2.tz1_cinema.repository.UserRepository;
 import org.project2.tz1_cinema.service.UserInfoUserDetailsService;
 import org.project2.tz1_cinema.service.UserService;
 import org.springframework.boot.CommandLineRunner;
@@ -88,7 +88,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CommandLineRunner commandLineRunner(UserRepo userInfoRepository, PasswordEncoder passwordEncoder) {
+    public CommandLineRunner commandLineRunner(UserRepository userInfoRepository, PasswordEncoder passwordEncoder) {
         return args -> {
             // Создание администратора по умолчанию
             if (userInfoRepository.findByEmail("admin@example.com").isEmpty()) {
@@ -114,7 +114,7 @@ public class SecurityConfig {
 
     // Регистрация нового пользователя
     @Bean
-    public CommandLineRunner registerUser(UserRepo userInfoRepository, PasswordEncoder passwordEncoder) {
+    public CommandLineRunner registerUser(UserRepository userInfoRepository, PasswordEncoder passwordEncoder) {
         return args -> {
             if (userInfoRepository.findByEmail("newuser@example.com").isEmpty()) {
                 Users newUser = new Users();

@@ -1,12 +1,12 @@
 package org.project2.tz1_cinema.service;
 
-import org.project2.tz1_cinema.dto.actor_Dto;
-import org.project2.tz1_cinema.dto.movie_Dto;
+import org.project2.tz1_cinema.dto.ActorDto;
+import org.project2.tz1_cinema.dto.MovieDto;
 import org.project2.tz1_cinema.model.Actor;
 import org.project2.tz1_cinema.model.Comment;
 import org.project2.tz1_cinema.model.Movie;
-import org.project2.tz1_cinema.repo.ActorRepo;
-import org.project2.tz1_cinema.repo.MovieRepo;
+import org.project2.tz1_cinema.repository.ActorRepository;
+import org.project2.tz1_cinema.repository.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,48 +16,48 @@ import java.util.Optional;
 
 @Service
 public class MovieService {
-    private final MovieRepo movieRepo;
-    private final ActorRepo actorRepo;
+    private final MovieRepository movieRepository;
+    private final ActorRepository actorRepository;
 
     @Autowired
-    public MovieService(MovieRepo movieRepo, ActorRepo actorRepo) {
-        this.movieRepo = movieRepo;
-        this.actorRepo = actorRepo;
+    public MovieService(MovieRepository movieRepository, ActorRepository actorRepository) {
+        this.movieRepository = movieRepository;
+        this.actorRepository = actorRepository;
     }
     public Movie getMovieByTitle(String title) {
-        return movieRepo.findByTitle(title).orElse(null);
+        return movieRepository.findByTitle(title).orElse(null);
     }
 
     public List<Movie> getAllMovies() {
-        return movieRepo.findAll();
+        return movieRepository.findAll();
     }
 
     public Movie getMovieById(int id) {
-        return movieRepo.findById(id).orElse(null);
+        return movieRepository.findById(id).orElse(null);
     }
 
     public Movie addMovie(Movie movie) {
-        return movieRepo.save(movie);
+        return movieRepository.save(movie);
     }
 
     public List<Movie> getByReleaseYear(int year) {
-        return movieRepo.getMovieByReleaseYear(year);
+        return movieRepository.getMovieByReleaseYear(year);
     }
 
     public Movie updateMovie(Movie movie) {
-        return movieRepo.save(movie);
+        return movieRepository.save(movie);
     }
 
     public void deleteMovie(int id) {
-        movieRepo.deleteById(id);
+        movieRepository.deleteById(id);
     }
     public List<Movie> releaseDate(int releaseData){
-        return movieRepo.findByRelease_data(releaseData);
+        return movieRepository.findByRelease_data(releaseData);
     }
     public List<Movie> findByActor(Actor actor) {
-        return movieRepo.findByActors(actor);
+        return movieRepository.findByActors(actor);
     }
-    public Movie addMovie(movie_Dto movieDto) {
+    public Movie addMovie(MovieDto movieDto) {
         Movie movie = new Movie();
         movie.setTitle(movieDto.getTitle());
         movie.setReleaseYear(movieDto.getReleaseYear());
@@ -66,22 +66,22 @@ public class MovieService {
 
         List<Actor> actors = new ArrayList<>();
 
-        for (actor_Dto actor : movieDto.getActors()) {
-            Optional<Actor> existingActorOpt = Optional.ofNullable(actorRepo.findByFirstNameAndLastName(actor.getFirstName(), actor.getLastName()));
+        for (ActorDto actor : movieDto.getActors()) {
+            Optional<Actor> existingActorOpt = Optional.ofNullable(actorRepository.findByFirstNameAndLastName(actor.getFirstName(), actor.getLastName()));
 
             Actor actorToAdd;
-            actorToAdd = existingActorOpt.orElseGet(() -> actorRepo.save(convertActorDtoToActor(actor)));
+            actorToAdd = existingActorOpt.orElseGet(() -> actorRepository.save(convertActorDtoToActor(actor)));
             actors.add(actorToAdd);
         }
 
         movie.setActors(actors);
 
-        return movieRepo.save(movie);
+        return movieRepository.save(movie);
     }
     public void save(Movie movie){
-        movieRepo.save(movie);
+        movieRepository.save(movie);
     }
-    public Actor convertActorDtoToActor(actor_Dto actorDto) {
+    public Actor convertActorDtoToActor(ActorDto actorDto) {
         Actor actor = new Actor();
         actor.setFirstName(actorDto.getFirstName());
         actor.setLastName(actorDto.getLastName());

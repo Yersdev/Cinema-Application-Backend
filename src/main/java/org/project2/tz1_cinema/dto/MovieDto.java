@@ -9,11 +9,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class movie_Dto {
+public class MovieDto {
     private String title;
     private String country;
     private String genre;
     private Integer releaseYear;
-    private List<actor_Dto> actors;
-    private director_Dto director;
+    private List<ActorDto> actors;
+    private DirectorDto director;
 }

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.project2.tz1_cinema.model.Role;
 import org.project2.tz1_cinema.model.Users;
-import org.project2.tz1_cinema.repo.UserRepo;
+import org.project2.tz1_cinema.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2) // Указывает использование встроенной базы данных
 public class UserRepositoryTests {
     @Autowired
-    UserRepo userRepo;
+    UserRepository userRepository;
 
     @Test
     public void UserRepository_saveUser(){
@@ -30,7 +30,7 @@ public class UserRepositoryTests {
         user.setEmail("test@test.com");
         user.setPassword("test_password");
         user.setRole(Role.USER);
-        Users savedUser = userRepo.save(user);
+        Users savedUser = userRepository.save(user);
         Assertions.assertNotNull(savedUser);
     }
     @Test
@@ -41,7 +41,7 @@ public class UserRepositoryTests {
         user.setEmail("test@test.com");
         user.setPassword("test_password");
         user.setRole(Role.USER);
-        Users savedUser = userRepo.save(user);
+        Users savedUser = userRepository.save(user);
         Assertions.assertNotNull(savedUser);
     }
     @Test
@@ -55,13 +55,13 @@ public class UserRepositoryTests {
         user.setRole(Role.USER);
 
         // Сохранить пользователя
-        userRepo.save(user);
+        userRepository.save(user);
 
         // Удалить пользователя
-        userRepo.delete(user);
+        userRepository.delete(user);
 
         // Проверить, что пользователь удалён
-        Optional<Users> foundUser = userRepo.findById(user.getId());
+        Optional<Users> foundUser = userRepository.findById(user.getId());
         assertTrue(foundUser.isEmpty(), "User should not exist in the database after deletion");
     }
     @Test void UserRepository_findUserByEmail(){
@@ -71,8 +71,8 @@ public class UserRepositoryTests {
         user.setEmail("test@test.com");
         user.setPassword("test_password");
         user.setRole(Role.USER);
-        userRepo.save(user);
-        Users savedUser = userRepo.findUsersByEmail(user.getEmail());
+        userRepository.save(user);
+        Users savedUser = userRepository.findUsersByEmail(user.getEmail());
         Assertions.assertNotNull(savedUser);
     }
     @Test void UserRepository_findUsersByName(){
@@ -82,8 +82,8 @@ public class UserRepositoryTests {
         user.setEmail("test@test.com");
         user.setPassword("test_password");
         user.setRole(Role.USER);
-        userRepo.save(user);
-        Users savedUser = userRepo.findUsersByName(user.getName());
+        userRepository.save(user);
+        Users savedUser = userRepository.findUsersByName(user.getName());
         Assertions.assertNotNull(savedUser);
     }
 }

@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.project2.tz1_cinema.dto.UserInfoUserDetails;
 import org.project2.tz1_cinema.model.Comment;
 import org.project2.tz1_cinema.model.Users;
-import org.project2.tz1_cinema.repo.CommentRepo;
-import org.project2.tz1_cinema.repo.UserRepo;
+import org.project2.tz1_cinema.repository.CommentRepository;
+import org.project2.tz1_cinema.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,18 +19,18 @@ import java.util.Optional;
 @Service
 public class UserService {
     @Autowired
-    private final UserRepo userRepo;
-    private final CommentRepo commentRepo;
+    private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
 
-    public UserService(UserRepo userRepo, CommentRepo commentRepo) {
-        this.userRepo = userRepo;
-        this.commentRepo = commentRepo;
+    public UserService(UserRepository userRepository, CommentRepository commentRepository) {
+        this.userRepository = userRepository;
+        this.commentRepository = commentRepository;
     }
     public Users findByUsername(String username) {
-        return userRepo.findUsersByName(username);
+        return userRepository.findUsersByName(username);
     }
     public Users findByEmail(String email) {
-        return userRepo.findUsersByEmail(email);
+        return userRepository.findUsersByEmail(email);
     }
 
     @Transactional
@@ -39,15 +39,15 @@ public class UserService {
         comments.add(comment);
 
         comment.setUsers(user);
-        commentRepo.save(comment);
+        commentRepository.save(comment);
 
-        userRepo.save(user);
+        userRepository.save(user);
     }
 
 
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // Используем email вместо имени для поиска пользователя
-        Optional<Users> userInfo = userRepo.findByEmail(username);
+        Optional<Users> userInfo = userRepository.findByEmail(username);
         log.info("user info: {}", userInfo);
         return userInfo.map(UserInfoUserDetails::new)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));

@@ -1,25 +1,25 @@
 package org.project2.tz1_cinema.service;
 
-import org.project2.tz1_cinema.dto.actor_Dto;
+import org.project2.tz1_cinema.dto.ActorDto;
 import org.project2.tz1_cinema.model.Actor;
-import org.project2.tz1_cinema.repo.ActorRepo;
-import org.project2.tz1_cinema.repo.DirectorRepo;
+import org.project2.tz1_cinema.repository.ActorRepository;
+import org.project2.tz1_cinema.repository.DirectorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ActorDirectorService {
 
-    private final ActorRepo actorRepository;
-    private final DirectorRepo directorRepository;
+    private final ActorRepository actorRepository;
+    private final DirectorRepository directorRepository;
 
     @Autowired
-    public ActorDirectorService(ActorRepo actorRepository, DirectorRepo directorRepository) {
+    public ActorDirectorService(ActorRepository actorRepository, DirectorRepository directorRepository) {
         this.actorRepository = actorRepository;
         this.directorRepository = directorRepository;
     }
 
-    public void addActor(actor_Dto actorDto) {
+    public void addActor(ActorDto actorDto) {
         Actor actor = new Actor();
         actor.setFirstName(actorDto.getFirstName());
         actor.setLastName(actorDto.getLastName());

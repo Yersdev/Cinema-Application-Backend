@@ -4,10 +4,10 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.project2.tz1_cinema.dto.*;
 import org.project2.tz1_cinema.model.*;
-import org.project2.tz1_cinema.repo.ActorRepo;
-import org.project2.tz1_cinema.repo.CommentRepo;
-import org.project2.tz1_cinema.repo.MovieRepo;
-import org.project2.tz1_cinema.repo.UserRepo;
+import org.project2.tz1_cinema.repository.ActorRepository;
+import org.project2.tz1_cinema.repository.CommentRepository;
+import org.project2.tz1_cinema.repository.MovieRepository;
+import org.project2.tz1_cinema.repository.UserRepository;
 import org.project2.tz1_cinema.service.ActorService;
 import org.project2.tz1_cinema.service.DirectorService;
 import org.project2.tz1_cinema.service.MovieService;
@@ -25,11 +25,11 @@ import java.util.List;
 @AllArgsConstructor
 public class MovieController {
 
-    private final MovieRepo movieRepo;
+    private final MovieRepository movieRepository;
     private final MovieService movieService;
-    private final ActorRepo actorRepo;
-    private final UserRepo userRepo;
-    private final CommentRepo commentRepo;
+    private final ActorRepository actorRepository;
+    private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
     private final ActorService actorService;
     private final DirectorService directorService;
 
@@ -37,8 +37,8 @@ public class MovieController {
     //@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     @GetMapping("")
-    public ResponseEntity<List<movie_Dto>> getAllMovies() {
-        List<movie_Dto> movies = movieConvertToDto(movieRepo.findAll());
+    public ResponseEntity<List<MovieDto>> getAllMovies() {
+        List<MovieDto> movies = movieConvertToDto(movieRepository.findAll());
         if (movies.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -47,9 +47,9 @@ public class MovieController {
 
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     @GetMapping("/{year}")
-    public ResponseEntity<List<movie_Dto>> getMoviesByYear(@PathVariable int year) {
+    public ResponseEntity<List<MovieDto>> getMoviesByYear(@PathVariable int year) {
         List<Movie> movies = movieService.getByReleaseYear(year);
-        List<movie_Dto> movieDtos = movieConvertToDto(movies);
+        List<MovieDto> movieDtos = movieConvertToDto(movies);
 
         if (movieDtos.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -61,21 +61,21 @@ public class MovieController {
     //get movie where we have the current actor
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     @GetMapping("/{actorId}/all_movies")
-    public ResponseEntity<List<movie_Dto>> getAllMoviesByActor(@PathVariable int actorId) {
+    public ResponseEntity<List<MovieDto>> getAllMoviesByActor(@PathVariable int actorId) {
         // Получаем актера
-        Actor actor = actorRepo.findById(actorId);
+        Actor actor = actorRepository.findById(actorId);
         if (actor == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        List<Movie> movies = movieRepo.findByActors(actor);
-        List<movie_Dto> movieDtos = movieConvertToDto(movies);
+        List<Movie> movies = movieRepository.findByActors(actor);
+        List<MovieDto> movieDtos = movieConvertToDto(movies);
         return ResponseEntity.ok(movieDtos);
     }
 
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     @GetMapping("/{movieId}/comments")
-    public ResponseEntity<List<comment_Dto>> getCommentsByMovie(@PathVariable int movieId) {
-        Movie movie = movieRepo.findById(movieId).orElse(null);
+    public ResponseEntity<List<MovieCommentDto>> getCommentsByMovie(@PathVariable int movieId) {
+        Movie movie = movieRepository.findById(movieId).orElse(null);
         if (movie == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -83,19 +83,19 @@ public class MovieController {
         if (comments.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        List<comment_Dto> commentDtos = commentConvertToDto(comments);
+        List<MovieCommentDto> commentDtos = commentConvertToDto(comments);
         return new ResponseEntity<>(commentDtos, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     @GetMapping("/{movieId}/actors")
-    public ResponseEntity<List<actor_Dto>> getActorsByMovie(@PathVariable int movieId) {
-        Movie movie = movieRepo.findById(movieId).orElse(null);
+    public ResponseEntity<List<ActorDto>> getActorsByMovie(@PathVariable int movieId) {
+        Movie movie = movieRepository.findById(movieId).orElse(null);
         if (movie == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         List<Actor> actors = movie.getActors();
-        List<actor_Dto> actorDtos = actorConvertToDtoList(actors);
+        List<ActorDto> actorDtos = actorConvertToDtoList(actors);
         if (actorDtos.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -104,38 +104,38 @@ public class MovieController {
 
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/{idCinema}/addComment", consumes = "application/json")
-    public ResponseEntity<Comment> addMovie(@RequestBody comment_details_dto dto,
+    public ResponseEntity<Comment> addMovie(@RequestBody CommentDto dto,
                                             @PathVariable Integer idCinema) {
-        Movie movie = movieRepo.findById(idCinema).orElse(null);
+        Movie movie = movieRepository.findById(idCinema).orElse(null);
         if (movie == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if(!userRepo.existsByName(dto.getFirstName())) {
+        if(!userRepository.existsByName(dto.getFirstName())) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        Movie movie1 = movieRepo.findById(idCinema)
+        Movie movie1 = movieRepository.findById(idCinema)
                 .orElseThrow(() -> new EntityNotFoundException("Movie with ID " + idCinema + " not found"));
-        Users user = userRepo.findById(userRepo.findUsersByEmail(dto.getEmail()).getId())
-                .orElseThrow(() -> new EntityNotFoundException("User with ID " + userRepo.findUsersByEmail(dto.getEmail()).getId() + " not found"));
+        Users user = userRepository.findById(userRepository.findUsersByEmail(dto.getEmail()).getId())
+                .orElseThrow(() -> new EntityNotFoundException("User with ID " + userRepository.findUsersByEmail(dto.getEmail()).getId() + " not found"));
         Comment newComment = new Comment();
         newComment.setComment(dto.getComments());
         newComment.setMovie(movie);
         newComment.setUsers(user);
-        commentRepo.save(newComment);
+        commentRepository.save(newComment);
         return new ResponseEntity<>(newComment, HttpStatus.OK);
     }
 //    ------------------ADMIN----------------------
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/movies/add", consumes = "application/json")
-    public ResponseEntity<Movie> addMovie(@RequestBody movie_Dto movieDto) {
+    public ResponseEntity<Movie> addMovie(@RequestBody MovieDto movieDto) {
         Movie movie1 = new Movie();
         movie1.setTitle(movieDto.getTitle());
         movie1.setCountry(movieDto.getCountry());
         movie1.setGenre(movieDto.getGenre());
         movie1.setActors(ActorDtoListconvertActorList(movieDto.getActors()));
         List<Actor> actors = ActorDtoListconvertActorList(movieDto.getActors());
-        actorRepo.saveAll(actors);
+        actorRepository.saveAll(actors);
         movie1.setReleaseYear(movieDto.getReleaseYear());
         movie1.setComments(movie1.getComments());
         movie1.setDirector(convactorDtoDirector(movieDto.getDirector()));
@@ -145,7 +145,7 @@ public class MovieController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/actor/add")
-    public ResponseEntity<actor_Dto> addActor(@RequestBody actor_Dto actorDto) {
+    public ResponseEntity<ActorDto> addActor(@RequestBody ActorDto actorDto) {
         if (actorDto.getFirstName() == null || actorDto.getFirstName().isEmpty() || actorDto.getLastName() == null || actorDto.getLastName().isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -158,7 +158,7 @@ public class MovieController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/director/add")
-    public ResponseEntity<director_Dto> addDirector(@RequestBody director_Dto directorDto) {
+    public ResponseEntity<DirectorDto> addDirector(@RequestBody DirectorDto directorDto) {
         Director director = new Director();
         director.setFirstName(directorDto.getFirstName());
         director.setLastName(directorDto.getLastName());
@@ -177,23 +177,23 @@ public class MovieController {
         userDto.setEmail(users.getEmail());
         return userDto;
     }
-    private director_Dto directorDtoConvertToDto(Director director) {
+    private DirectorDto directorDtoConvertToDto(Director director) {
         if (director == null) {
             return null;
         }
-        director_Dto directorDto = new director_Dto();
+        DirectorDto directorDto = new DirectorDto();
         directorDto.setFirstName(director.getFirstName());
         directorDto.setLastName(director.getLastName());
         directorDto.setYearOfBirth(director.getYearOfBirth());
         return directorDto;
     }
-    public List<comment_Dto> commentConvertToDto(List<Comment> comments) {
+    public List<MovieCommentDto> commentConvertToDto(List<Comment> comments) {
         if (comments == null || comments.isEmpty()) {
             return Collections.emptyList();
         }
-        List<comment_Dto> commentDtos = new ArrayList<>();
+        List<MovieCommentDto> commentDtos = new ArrayList<>();
         for (Comment comment : comments) {
-            comment_Dto commentDto = new comment_Dto();
+            MovieCommentDto commentDto = new MovieCommentDto();
             commentDto.setComment(comment.getComment());
             commentDto.setUserdto(userConvertToDto(comment.getUsers()));
             commentDto.setMovie(comment.getMovie()); commentDtos.add(commentDto);
@@ -201,37 +201,37 @@ public class MovieController {
         return commentDtos;
     }
 
-    private actor_Dto actorConvertToDto(Actor actor) {
+    private ActorDto actorConvertToDto(Actor actor) {
         if (actor == null) {
             return null;
         }
-        actor_Dto actorDto = new actor_Dto();
+        ActorDto actorDto = new ActorDto();
         actorDto.setFirstName(actor.getFirstName());
         actorDto.setLastName(actor.getLastName());
         actorDto.setYearOfBirth(actor.getYearOfBirth());
         return actorDto;
     }
 
-    private List<actor_Dto> actorConvertToDtoList(List<Actor> actors) {
+    private List<ActorDto> actorConvertToDtoList(List<Actor> actors) {
         if (actors == null || actors.isEmpty()) {
             return Collections.emptyList();
         }
-        List<actor_Dto> actorDtos = new ArrayList<>();
+        List<ActorDto> actorDtos = new ArrayList<>();
         for (Actor actor : actors) {
             actorDtos.add(actorConvertToDto(actor));
         }
         return actorDtos;
     }
 
-    private List<movie_Dto> movieConvertToDto(List<Movie> movies) {
+    private List<MovieDto> movieConvertToDto(List<Movie> movies) {
         if (movies == null || movies.isEmpty()) {
             return Collections.emptyList();
         }
-        List<movie_Dto> movieDtos = new ArrayList<>();
+        List<MovieDto> movieDtos = new ArrayList<>();
         for (Movie movie : movies) {
-            movie_Dto movieDto = new movie_Dto();
+            MovieDto movieDto = new MovieDto();
             movieDto.setTitle(movie.getTitle());
-            List<actor_Dto> actorDtos = new ArrayList<>();
+            List<ActorDto> actorDtos = new ArrayList<>();
             for (Actor actor : movie.getActors()) {
                 actorDtos.add(actorConvertToDto(actor));
             }
@@ -244,9 +244,9 @@ public class MovieController {
         }
         return movieDtos;
     }
-    private List<Actor> ActorDtoListconvertActorList(List<actor_Dto> actorAddDtoList) {
+    private List<Actor> ActorDtoListconvertActorList(List<ActorDto> actorAddDtoList) {
         List<Actor> actors = new ArrayList<>();
-        for (actor_Dto actorAddDto : actorAddDtoList) {
+        for (ActorDto actorAddDto : actorAddDtoList) {
             Actor actor = convertToActorDto(actorAddDto);
             actor.setFirstName(actorAddDto.getFirstName());
             actor.setLastName(actorAddDto.getLastName());
@@ -255,14 +255,14 @@ public class MovieController {
         }
         return actors;
     }
-    private Actor convertToActorDto(actor_Dto actorAddDto) {
+    private Actor convertToActorDto(ActorDto actorAddDto) {
         Actor actor = new Actor();
         actor.setFirstName(actorAddDto.getFirstName());
         actor.setLastName(actorAddDto.getLastName());
         actor.setYearOfBirth(actorAddDto.getYearOfBirth());
         return actor;
     }
-    private Director convactorDtoDirector(director_Dto DirectorAddDto) {
+    private Director convactorDtoDirector(DirectorDto DirectorAddDto) {
         Director director = new Director();
         director.setFirstName(DirectorAddDto.getFirstName());
         director.setLastName(DirectorAddDto.getLastName());
