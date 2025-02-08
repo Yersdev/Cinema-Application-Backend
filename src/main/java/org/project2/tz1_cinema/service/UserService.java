@@ -45,13 +45,6 @@ public class UserService {
     }
 
 
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // Используем email вместо имени для поиска пользователя
-        Optional<Users> userInfo = userRepository.findByEmail(username);
-        log.info("user info: {}", userInfo);
-        return userInfo.map(UserInfoUserDetails::new)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
-    }
     public List<Comment> getComments(Users user) {
         return user.getComments();
     }

@@ -16,7 +16,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/auth")
 @AllArgsConstructor
 @Slf4j
 public class AccountController {
@@ -42,7 +42,6 @@ public class AccountController {
         }
 
         try {
-            // Преобразуем DTO в объект User и сохраняем нового пользователя
             userRepository.save(convertDTOtoUser(registerDto));
 
             return ResponseEntity.status(HttpStatus.CREATED).body("Пользователь зарегистрирован успешно!");

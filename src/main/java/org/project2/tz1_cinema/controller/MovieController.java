@@ -33,8 +33,6 @@ public class MovieController {
     private final ActorService actorService;
     private final DirectorService directorService;
 
-    //all movies
-    //@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     @GetMapping("")
     public ResponseEntity<List<MovieDto>> getAllMovies() {
@@ -58,11 +56,9 @@ public class MovieController {
         return new ResponseEntity<>(movieDtos, HttpStatus.OK);
     }
 
-    //get movie where we have the current actor
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     @GetMapping("/{actorId}/all_movies")
     public ResponseEntity<List<MovieDto>> getAllMoviesByActor(@PathVariable int actorId) {
-        // Получаем актера
         Actor actor = actorRepository.findById(actorId);
         if (actor == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

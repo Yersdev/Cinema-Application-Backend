@@ -24,39 +24,12 @@ public class MovieService {
         this.movieRepository = movieRepository;
         this.actorRepository = actorRepository;
     }
-    public Movie getMovieByTitle(String title) {
-        return movieRepository.findByTitle(title).orElse(null);
-    }
-
-    public List<Movie> getAllMovies() {
-        return movieRepository.findAll();
-    }
-
-    public Movie getMovieById(int id) {
-        return movieRepository.findById(id).orElse(null);
-    }
-
-    public Movie addMovie(Movie movie) {
-        return movieRepository.save(movie);
-    }
 
     public List<Movie> getByReleaseYear(int year) {
         return movieRepository.getMovieByReleaseYear(year);
     }
 
-    public Movie updateMovie(Movie movie) {
-        return movieRepository.save(movie);
-    }
 
-    public void deleteMovie(int id) {
-        movieRepository.deleteById(id);
-    }
-    public List<Movie> releaseDate(int releaseData){
-        return movieRepository.findByRelease_data(releaseData);
-    }
-    public List<Movie> findByActor(Actor actor) {
-        return movieRepository.findByActors(actor);
-    }
     public Movie addMovie(MovieDto movieDto) {
         Movie movie = new Movie();
         movie.setTitle(movieDto.getTitle());

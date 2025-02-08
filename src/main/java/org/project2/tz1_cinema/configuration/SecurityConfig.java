@@ -1,4 +1,4 @@
-package org.project2.tz1_cinema.config;
+package org.project2.tz1_cinema.configuration;
 
 import lombok.extern.slf4j.Slf4j;
 import org.project2.tz1_cinema.model.Role;
@@ -45,8 +45,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(new AntPathRequestMatcher("/swagger-ui/index.html#/")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/register")).permitAll() // Разрешаем доступ к регистрации
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/webjars/**").permitAll()
                         .anyRequest().authenticated() // Все остальные запросы требуют авторизации
                 )
                 .formLogin(form -> form

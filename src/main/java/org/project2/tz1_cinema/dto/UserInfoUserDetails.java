@@ -1,23 +1,32 @@
 package org.project2.tz1_cinema.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.project2.tz1_cinema.model.Users;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@ToString
 public class UserInfoUserDetails implements UserDetails {
 
     private final String name;
     private final String password;
     private final List<GrantedAuthority> authorities;
 
-    public UserInfoUserDetails(Users userInfo) {
-        name = userInfo.getName();
-        password = userInfo.getPassword();
-        authorities = Collections.singletonList(new SimpleGrantedAuthority(userInfo.getRole().name()));
+    // Добавляем конструктор, который принимает объект Users
+    public UserInfoUserDetails(Users user) {
+        this.name = user.getEmail(); // Используем email как username
+        this.password = user.getPassword();
+        this.authorities = List.of(new SimpleGrantedAuthority(user.getRole().name())); // Роль пользователя
     }
 
     @Override
