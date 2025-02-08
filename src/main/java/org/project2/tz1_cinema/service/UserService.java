@@ -1,52 +1,29 @@
 package org.project2.tz1_cinema.service;
 
-import lombok.extern.slf4j.Slf4j;
-import org.project2.tz1_cinema.dto.UserInfoUserDetails;
-import org.project2.tz1_cinema.model.Comment;
+import lombok.RequiredArgsConstructor;
+import org.project2.tz1_cinema.dto.RegisterDto;
+import org.project2.tz1_cinema.dto.converter.UserConverter;
 import org.project2.tz1_cinema.model.Users;
-import org.project2.tz1_cinema.repository.CommentRepository;
 import org.project2.tz1_cinema.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.project2.tz1_cinema.util.BindCheckerUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
 
-import java.util.List;
-import java.util.Optional;
-
-@Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserService {
-    @Autowired
     private final UserRepository userRepository;
-    private final CommentRepository commentRepository;
-
-    public UserService(UserRepository userRepository, CommentRepository commentRepository) {
-        this.userRepository = userRepository;
-        this.commentRepository = commentRepository;
-    }
-    public Users findByUsername(String username) {
-        return userRepository.findUsersByName(username);
-    }
-    public Users findByEmail(String email) {
-        return userRepository.findUsersByEmail(email);
-    }
+    private final UserConverter userConverter;
 
     @Transactional
-    public void saveComment(Users user, Comment comment) {
-        List<Comment> comments = user.getComments();
-        comments.add(comment);
+    public void registerUser(RegisterDto registerDto, BindingResult bindingResult) {
 
-        comment.setUsers(user);
-        commentRepository.save(comment);
-
+        BindCheckerUtil.checkBind(bindingResult);
+        if (userRepository.findByEmail(registerDto.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email уже используется");
+        }
+        Users user = userConverter.toEntity(registerDto);
         userRepository.save(user);
     }
-
-
-    public List<Comment> getComments(Users user) {
-        return user.getComments();
-    }
-
 }
