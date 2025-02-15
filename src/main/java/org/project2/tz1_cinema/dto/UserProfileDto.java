@@ -11,21 +11,38 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Data Transfer Object for user profile implementing UserDetails for Spring Security.
+ */
 @Getter
 @Setter
 @AllArgsConstructor
 @ToString
 public class UserProfileDto implements UserDetails {
 
+    /**
+     * Username (email) of the user.
+     */
     private final String name;
+
+    /**
+     * Password of the user.
+     */
     private final String password;
+
+    /**
+     * Authorities granted to the user.
+     */
     private final List<GrantedAuthority> authorities;
 
-
+    /**
+     * Constructs a UserProfileDto from a Users entity.
+     * @param user Users entity
+     */
     public UserProfileDto(Users user) {
         this.name = user.getEmail();
         this.password = user.getPassword();
-        this.authorities = List.of(new SimpleGrantedAuthority(user.getRole().name())); // Роль пользователя
+        this.authorities = List.of(new SimpleGrantedAuthority(user.getRole().name()));
     }
 
     @Override

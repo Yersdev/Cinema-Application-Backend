@@ -18,6 +18,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * Конфигурационный класс Spring Security для настройки безопасности веб-приложения.
+ * <p>
+ * Включает безопасность на уровне методов, управление сессиями,
+ * шифрование паролей и аутентификацию через {@link UserInfoUserDetailsService}.
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -26,6 +32,21 @@ public class SecurityConfiguration {
 
     private final UserInfoUserDetailsService userInfoUserDetailsServices;
 
+    /**
+     * Настраивает цепочку фильтров безопасности Spring Security.
+     * <p>
+     * - Отключает CSRF-защиту.
+     * - Разрешает доступ к публичным URL-адресам, включая Swagger UI и документацию API.
+     * - Требует аутентификации для всех остальных запросов.
+     * - Настраивает вход через форму и перенаправляет после успешного входа на страницу с фильмами.
+     * - Позволяет выход из системы всем пользователям.
+     * - Устанавливает стратегию создания сессий как "если требуется".
+     * - Устанавливает провайдера аутентификации.
+     *
+     * @param http объект {@link HttpSecurity} для конфигурации безопасности.
+     * @return сконфигурированный объект {@link SecurityFilterChain}.
+     * @throws Exception в случае ошибок конфигурации.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
@@ -48,11 +69,23 @@ public class SecurityConfiguration {
         return http.build();
     }
 
+    /**
+     * Создаёт бин для шифрования паролей с помощью {@link BCryptPasswordEncoder}.
+     *
+     * @return экземпляр {@link PasswordEncoder}.
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Создаёт и настраивает провайдера аутентификации, используя {@link DaoAuthenticationProvider}.
+     * <p>
+     * Провайдер устанавливает сервис загрузки пользователей и шифратор паролей.
+     *
+     * @return настроенный {@link AuthenticationProvider}.
+     */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
@@ -61,6 +94,13 @@ public class SecurityConfiguration {
         return authenticationProvider;
     }
 
+    /**
+     * Создаёт бин менеджера аутентификации, используя переданную конфигурацию.
+     *
+     * @param config объект {@link AuthenticationConfiguration}, предоставляющий конфигурацию аутентификации.
+     * @return экземпляр {@link AuthenticationManager}.
+     * @throws Exception в случае ошибок получения менеджера аутентификации.
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
