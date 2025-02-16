@@ -3,6 +3,7 @@ package org.project2.tz1_cinema.service;
 import lombok.RequiredArgsConstructor;
 import org.project2.tz1_cinema.dto.DirectorDto;
 import org.project2.tz1_cinema.dto.MovieDto;
+import org.project2.tz1_cinema.dto.converter.MovieConverter;
 import org.project2.tz1_cinema.model.Actor;
 import org.project2.tz1_cinema.model.Director;
 import org.project2.tz1_cinema.model.Movie;
@@ -14,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MovieService {
     private final MovieRepository movieRepository;
+    private final MovieConverter movieConverter;
 
 
     public void save(Movie movie){
@@ -22,11 +24,11 @@ public class MovieService {
 
     public List<MovieDto> getMoviesByReleaseYear(int year) {
         List<Movie> movies = movieRepository.getMovieByReleaseYear(year);
-        return movieListToDtoList(movies);
+        return movieConverter.movieListToDtoList(movies);
     }
 
     public List<MovieDto> findByActor(Actor actor) {
-        return movieListToDtoList(movieRepository.findByActor(actor));
+        return movieConverter.movieListToDtoList(movieRepository.findByActor(actor));
     }
 
     public Movie findById(int movieId) {
